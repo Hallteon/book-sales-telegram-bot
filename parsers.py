@@ -31,10 +31,10 @@ async def scraper_book24():
             bef = block.find_all("span", class_="info-list__text")[-1]
             link = sale.get("href")
 
-            sales.append(sale.text.lstrip())
-            descriptions.append(descript.text.lstrip())
-            before.append(bef.text.lstrip())
-            links.append(link.lstrip())
+            sales.append(sale.text.strip())
+            descriptions.append(descript.text.strip())
+            before.append(bef.text.strip())
+            links.append(link.strip())
 
         except:
             continue
@@ -50,6 +50,11 @@ async def scraper_book24():
 async def scraper_chitay_gorod():
     data = {}
 
+    sales = []
+    descriptions = []
+    before = []
+    links = []
+
     url = "https://www.chitai-gorod.ru/actions/"
 
     req = requests.get(url, headers=headers)
@@ -57,26 +62,38 @@ async def scraper_chitay_gorod():
 
     soup = BeautifulSoup(src, "lxml")
 
-    blocks = soup.find_all("div", class_="action-card")
+    pagination = soup.find("div", class_="pagination")
+    pages = ["/actions/"]
 
-    sales = []
-    descriptions = []
-    before = []
-    links = []
+    pages.extend(pagination.find_all("a", class_="pagination-item")[:-1])
 
-    for block in blocks:
+    for page in pages:
         try:
-            sale = block.find("a", class_="action-card__title")
-            descript = block.find("div", class_="action-card__description")
-            bef = block.find("div", class_="action-card__date").find("span", class_="color_red")
-            link = sale.get("href")
-
-            sales.append(sale.text)
-            descriptions.append(descript.text)
-            before.append(bef.text)
-            links.append(link)
+            url_page = page.get("href")
         except:
-            continue
+            url_page = page
+
+        req_page = requests.get(f"https://www.chitai-gorod.ru{url_page}", headers=headers)
+        src_page = req_page.text
+
+        soup_page = BeautifulSoup(src_page, "lxml")
+
+        blocks = soup_page.find_all("div", class_="action-card")
+
+        for block in blocks:
+            try:
+                sale = block.find("a", class_="action-card__title")
+                descript = block.find("div", class_="action-card__description")
+                bef = block.find("div", class_="action-card__date").find("span", class_="color_red")
+                link = sale.get("href")
+
+                sales.append(sale.text.strip())
+                descriptions.append(descript.text.strip())
+                before.append(bef.text.strip())
+                links.append(link.strip())
+            except AttributeError:
+                del sales[-1]
+                continue
 
     data["sales"] = sales
     data["descriptions"] = descriptions
