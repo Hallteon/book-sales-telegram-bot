@@ -61,6 +61,9 @@ async def chit_gor_sales(message: types.Message):
     before = sales["before"]
     links = sales["links"]
 
+    print(len(sales_names), len(descriptions), len(before), len(links))
+    print(sales)
+
     text = "<b>Список акций в интернет-магазине Читай-Город 📚:</b>\n"
 
     for sale, descript, bef, link in zip(sales_names, descriptions, before, links):
