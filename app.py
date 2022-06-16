@@ -1,4 +1,4 @@
-import handlers
+import middlewares, handlers
 from aiogram import executor
 from loader import dp
 from utils import notify_admins, set_bot_commands

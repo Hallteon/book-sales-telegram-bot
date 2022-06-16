@@ -1,3 +1,4 @@
+from utils.throttling import rate_limit
 from . import markups
 from aiogram import types
 from aiogram.types import ReplyKeyboardRemove
@@ -7,6 +8,7 @@ from utils import parsers
 from loader import dp, bot
 
 
+@rate_limit(1, "sales")
 @dp.message_handler(Command("sales"))
 async def book_sales(message: types.Message):
     await message.answer("Выберите книжный интернет-магазин, чтобы узнать об "
